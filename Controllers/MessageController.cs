@@ -15,7 +15,7 @@ namespace ChatApp.Controllers
     public class MessageController : Controller
     {
         private readonly IHubContext<ChatHub> _chatHub;
-
+//random
         public MessageController(IHubContext<ChatHub> chatHub)
         {
             _chatHub = chatHub;
