@@ -1,0 +1,126 @@
+﻿@{
+    ViewBag.Title = "TeamChat - Login";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TPCODL</title><br>
+    <title> TeamChat - Login</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #e0f0ff, #ffffff);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background-color: #ffffff;
+            width: 400px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .logo img {
+            width: 120px;
+            height: auto;
+            margin-bottom: 10px;
+        }
+
+        .title {
+            font-size: 24px;
+            color: #005ea8;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 25px;
+            font-size: 15px;
+            transition: 0.2s ease-in-out;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            border-color: #0078d7;
+            outline: none;
+            box-shadow: 0 0 6px rgba(0, 120, 215, 0.2);
+        }
+
+        button {
+            width: 100%;
+            background-color: #0078d7;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: 0.2s;
+        }
+
+            button:hover {
+                background-color: #005ea8;
+            }
+
+        .note {
+            margin-top: 20px;
+            font-size: 13px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="title">TPCODL TeamChat Login</div>
+
+        <input type="text" id="username" placeholder="Enter Username" />
+        <input type="password" id="password" placeholder="Enter Password" />
+
+        <button onclick="login()">Login</button><a href="c:\training\chatapp\views\account\login.cshtml">c:\training\chatapp\views\account\login.cshtml</a>
+
+        <div class="note">Use your official TeamChat credentials to continue</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        function login() {
+            const user = $('#username').val().trim();
+            const pass = $('#password').val().trim();
+
+            if (!user || !pass) {
+                alert("Please enter both username and password.");
+                return;
+            }
+
+            $.ajax({
+                url: '/Account/Login',
+                method: 'POST',
+                data: { username: user, password: pass },
+                success: function (response) {
+                    window.location.href = '/Account/Chat';
+                },
+                error: function () {
+                    alert('Invalid credentials. Please try again.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
+
+

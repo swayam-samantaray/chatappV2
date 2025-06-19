@@ -1,0 +1,39 @@
+8d2e29d0-7726-450b-b389-0f6ce0b89093|mohit|11:53|hi
+d4549faa-2baa-4b2b-8c2b-bd2bf0abc1b2|mohit|11:53|hi
+4ff9866f-7bbd-489c-befd-60f032a0769a|mohit|11:54|hi
+ddfe5631-447d-4522-9e4c-aa4aa0744bbc|mohit|11:54|hi
+89add3a7-d93f-4b0e-9403-dbd822ee0ec0|mohit|11:58|hi
+{"MessageId":"16196bb5-16f5-4ff4-9d73-4f60d0254124","Message":"hi","To":"Group3","MessageTime":"12:47","From":"mohit"}
+{"MessageId":"aa4d788b-d611-46a8-aee1-1279cfff27d0","Message":"hello","To":"Group3","MessageTime":"12:49","From":"mohit"}
+{"MessageId":"f51549ac-7dc1-49cb-9456-87e1151b4a61","Message":"hello","To":"Group3","MessageTime":"12:49","From":"admin"}
+{"MessageId":"b49d297d-6581-4ae3-8ef6-b9cb07f01bbd","Message":"hi","To":"Group3","MessageTime":"14:47","From":"admin"}
+{"MessageId":"4124cb1a-79db-43bf-bb9e-58b11df7ed4a","Message":"hi","To":"Group3","MessageTime":"14:55","From":"mohit"}
+{"MessageId":"9964bd95-bbca-4aed-a54c-95e63eb5a98f","Message":"hi","To":"Group3","MessageTime":"15:02","From":"admin"}
+{"MessageId":"e64c6be1-5563-4e75-b264-f604c3436585","Message":"hi","To":"Group3","MessageTime":"15:46","From":"admin"}
+{"MessageId":"74595fde-f87e-4972-9f5f-8984e382bea8","Message":"hi","To":"Group3","MessageTime":"15:47","From":"mohit"}
+{"MessageId":"38e032eb-0412-45d2-82cc-dd8b31bcbeea","Message":"hi","To":"Group3","MessageTime":"16:21","From":"mohit"}
+{"MessageId":"855c5ec7-497f-44ea-98fd-03fbecd3bd44","Message":"hello","To":"Group3","MessageTime":"16:21","From":"admin"}
+{"MessageId":"5b023765-2035-4c7c-b8ee-f5f1db77a35d","Message":"bye","To":"Group3","MessageTime":"16:21","From":"mohit"}
+{"MessageId":"671b3cc9-c0a7-4464-aaaa-626176f8401d","Message":"ok","To":"Group3","MessageTime":"16:34","From":"mohit"}
+{"MessageId":"4626ca8d-aac0-4023-ac1b-af1351ca4090","Message":"hi","To":"Group3","MessageTime":"16:43","From":"admin"}
+{"MessageId":"0e09f071-9bf1-4077-83ce-5abdbc3d99b7","Message":"hi","To":"Group3","MessageTime":"16:43","From":"mohit"}
+{"MessageId":"121a0f57-1ba0-4ab7-ab31-44fb36dd0bb1","Message":"hi","To":"Group3","MessageTime":"16:44","From":"mohit"}
+{"MessageId":"","Message":"hi","To":"Group3","MessageTime":"10:52","From":"mohit"}
+{"MessageId":"","Message":"hi","To":"Group3","MessageTime":"10:54 am","From":"admin"}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"hi","To":"Group3","MessageTime":"15:59","From":"mohit"}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"brother","To":"Group3","MessageTime":"17:35","From":"mohit"}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"my broo","To":"Group3","MessageTime":"10:49","From":"mohit"}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"hi","To":"Group3","MessageTime":"11:33 am","From":""}
+{"MessageId":"6cdf8acd-e352-459a-bea1-e01bdfc483d6","Message":"/uploads/9607aff3-ef8f-49a8-8ae1-dd105b6e438c_COA_UNIT-1.pdf","To":"Group3","MessageTime":"03:19 PM","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":true,"FileName":"COA_UNIT-1.pdf"}
+{"MessageId":"82b06605-31c5-45df-a165-c52e1b74057b","Message":"nice","To":"Group3","MessageTime":"03:28 pm","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"664ab164-aaca-4a97-90df-76803b881e7c","Message":"study hard","To":"Group3","MessageTime":"03:29 pm","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"d8b43119-5f2e-4309-b76e-9834340a55b3","Message":"okk","To":"Group3","MessageTime":"16:52","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"b34a07a2-f9ea-4817-8c15-054e25b1ba6b","Message":"/uploads/02c51eb5-fbe0-47b1-9bd6-ac4c85b56c29_Screenshot 2025-06-04 113236.png","To":"Group3","MessageTime":"05:46 PM","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":true,"FileName":"Screenshot 2025-06-04 113236.png"}
+{"MessageId":"eaf29cd0-a977-464c-a956-effb6f4715a8","Message":"good morning","To":"Group3","MessageTime":"10:41","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"362cc760-5174-4faa-ab05-569868b3a630","Message":"yoo","To":"Group3","MessageTime":"11:18","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"9dd03729-2a7a-4ccc-83ad-b229f8b0a0bc","Message":"hi","To":"Group3","MessageTime":"15:35","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"66a9c869-bfcd-4ab3-8f4b-2956cacf1cdb","Message":"/uploads/a1abdd9a-4d25-4509-ad95-bc67db42d2ee_Screenshot 2025-06-04 120459.png","To":"Group3","MessageTime":"03:35 PM","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":true,"FileName":"Screenshot 2025-06-04 120459.png"}
+{"MessageId":"41ec49ce-d049-4663-b5dc-2b59a3e1b4ac","Message":"hi","To":"Group3","MessageTime":"12:23","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"124d9807-ea06-4e12-84d3-cb2cb2d71615","Message":"hwSXIKHCWIHC","To":"Group3","MessageTime":"03:47 pm","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"b8088e38-b556-4178-be26-3d2abb6ab961","Message":"NXJJJbscjkkjs","To":"Group3","MessageTime":"15:47","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"9e087b39-bc78-4c2a-bc23-110986fafd9e","Message":"no reply","To":"Group3","MessageTime":"14:47","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}

@@ -1,0 +1,20 @@
+{"MessageId":"","Message":"hi","To":"Group4","MessageTime":"11:22","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hello mohit","To":"Group4","MessageTime":"11:23 am","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"how are you","To":"Group4","MessageTime":"11:23","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hi4","To":"Group4","MessageTime":"11:54","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hiww2","To":"Group4","MessageTime":"11:55","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hi442","To":"Group4","MessageTime":"11:56","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"test-new","To":"Group4","MessageTime":"12:15","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"tomorrow is holiday or not","To":"Group4","MessageTime":"12:28","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"hi","To":"Group4","MessageTime":"12:28","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"uoo","To":"Group4","MessageTime":"12:30","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"tuu","To":"Group4","MessageTime":"12:30 pm","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"happy birthday","To":"Group4","MessageTime":"10:38","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"yooo","To":"Group4","MessageTime":"10:38","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"friday","To":"Group4","MessageTime":"11:21","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"nice day","To":"Group4","MessageTime":"11:21 am","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"tomorrow is holiday","To":"Group4","MessageTime":"11:44","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"nice","To":"Group4","MessageTime":"11:45 am","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"88344c46-fb3c-4bf1-9a15-2cd8d52400aa","Message":"how are you bro  how","To":"Group4","MessageTime":"12:28 PM","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"adeac450-12f4-4b95-adf7-5a5f801fc42a","Message":"/uploads/eaaca9cc-a0fa-4ff5-8c93-b92bf331e429_Screenshot 2025-06-04 120459.png","To":"Group4","MessageTime":"11:39 AM","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":true,"FileName":"Screenshot 2025-06-04 120459.png"}
+{"MessageId":"a295b986-e185-4c62-a417-60ac8aaee14e","Message":"/uploads/4a4d4b3b-2362-4b7a-972e-42e4a1db0dba_Screenshot 2025-06-04 125555.png","To":"Group4","MessageTime":"12:15 PM","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":true,"FileName":"Screenshot 2025-06-04 125555.png"}

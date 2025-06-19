@@ -1,0 +1,27 @@
+{"MessageId":"ae3b050c-5237-41ba-9bab-3465919a7a94","Message":"hi","To":"Group2","MessageTime":"12:49","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"27120deb-9a61-4fe1-9a0b-779ba2065109","Message":"hello admin","To":"Group2","MessageTime":"12:50","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"88dfe0e8-bfe8-445c-bb69-b7a081a99fe4","Message":"hi","To":"Group2","MessageTime":"14:27","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"4fcd00d2-aa3f-452a-8d8b-cc62df7a1813","Message":"hello","To":"Group2","MessageTime":"16:44","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"47f2ce29-69f8-46d2-a26f-9bbaa86376b8","Message":"hi","To":"Group2","MessageTime":"16:44","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"696fe331-72c5-409c-935b-e63c95614efa","Message":"bye","To":"Group2","MessageTime":"16:45","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"030b2c49-48f2-4be4-b580-a5ce87ad7ced","Message":"how are u","To":"Group2","MessageTime":"16:47","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"81f7b29a-d3f5-480e-a33e-8c5100d61df8","Message":"helo","To":"Group2","MessageTime":"17:04","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"7494d1d7-24d9-477e-9045-842346019f78","Message":"hello","To":"Group2","MessageTime":"17:08","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"b8bb7e32-47b6-4e74-b87e-8c625f89ca7f","Message":"hello","To":"Group2","MessageTime":"17:08","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"0eb7ed6e-7ef1-46f1-80b3-80f2fcc51e47","Message":"hello","To":"Group2","MessageTime":"17:08","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"7616e61e-7566-43b0-8886-dcc8a6b92483","Message":"hello","To":"Group2","MessageTime":"17:08","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"338e4c45-5b87-4ddd-9b38-cc83cf0d87f1","Message":"hi","To":"Group2","MessageTime":"17:08","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"f45ddd3d-b932-42c3-986f-d60a116aee56","Message":"hi","To":"Group2","MessageTime":"17:11","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"cb4e112b-c9f2-49a2-8bbf-7ae8a82324df","Message":"hello","To":"Group2","MessageTime":"17:12","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"2481d320-5af8-4cc2-a471-06057acf8d06","Message":"hi","To":"Group2","MessageTime":"17:21","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hello","To":"Group2","MessageTime":"10:59 am","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hello admin","To":"Group2","MessageTime":"10:59","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hi admin","To":"Group2","MessageTime":"11:53","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"","Message":"hi admin","To":"Group2","MessageTime":"11:53","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"shyam tyaagi sir","To":"Group2","MessageTime":"04:39 PM","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"hello hi","To":"Group2","MessageTime":"04:05 pm","From":"admin","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"shyam","To":"Group2","MessageTime":"16:11","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00000000-0000-0000-0000-000000000000","Message":"brooo","To":"Group2","MessageTime":"17:36","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"083a57e4-1755-40e0-8de9-f3eee4dde746","Message":"ok no problem 123","To":"Group2","MessageTime":"15:44","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"00c133b7-a136-4020-bb60-bae13b7e6317","Message":"noo","To":"Group2","MessageTime":"16:41","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
+{"MessageId":"4d14da2e-2cd2-4e4b-91c6-e242a905d10e","Message":"how are you","To":"Group2","MessageTime":"12:55","From":"mohit","IsEdited":false,"IsDeleted":false,"IsFile":false,"FileName":null}
