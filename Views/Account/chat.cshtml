@@ -1,1195 +1,149 @@
 ﻿@{
-    ViewBag.Title = "TeamChat - Chat";
-    var username = (string)(ViewBag.Username ?? "Guest");
+    ViewBag.Title = "Chat Room";
+    var username = ViewBag.Username ?? "Guest";
 }
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>TeamChat</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<input type="hidden" id="username" value="@username" />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+    #chatContainer {
+        position: fixed;
+        bottom: 0;
+        right: 20px;
+        width: 350px;
+        max-height: 80vh;
+        z-index: 1000;
+    }
+
+    #chatHeader {
+        background-color: #0d6efd;
+        color: white;
+        padding: 10px;
+        border-radius: 10px 10px 0 0;
+        cursor: pointer;
+    }
+
+    #chatBody {
+        display: none;
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-top: none;
+        border-radius: 0 0 10px 10px;
+        padding: 10px;
+        overflow-y: auto;
+        max-height: 60vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #chatBox {
+        flex: 1;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .message {
+        max-width: 80%;
+        word-wrap: break-word;
+    }
+
+    #contextMenu {
+        position: absolute;
+        display: none;
+        background: white;
+        border: 1px solid #ccc;
+        z-index: 1050;
+        padding: 5px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+        #contextMenu div:hover {
+            background: #f0f0f0;
+            cursor: pointer;
+        }
+
+    #replyPreview {
+        background: #e9ecef;
+        padding: 5px;
+        border-left: 3px solid #0d6efd;
+        margin-bottom: 5px;
+    }
+</style>
+
+<div id="chatContainer">
+    <div id="chatHeader" onclick="toggleChat()">Chat</div>
+    <div id="chatBody">
+        <div class="mb-2">
+            <select class="form-select form-select-sm" id="groupSelect">
+                <option value="">-- Select Group --</option>
+                <option>Group 1</option>
+                <option>Group 2</option>
+                <option>Group 3</option>
+            </select>
+        </div>
+
+        <div id="replyPreview" class="d-none rounded p-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong>Replying to <span id="replySender">someone</span></strong>
+                <button class="btn btn-sm btn-close" id="cancelReply"></button>
+            </div>
+            <div id="replyText" class="text-muted small"></div>
+        </div>
+
+        <div id="chatBox" class="flex-grow-1"></div>
+
+        <div class="input-group mt-2">
+            <input type="text" id="msg" class="form-control" placeholder="Type a message..." />
+            <button id="sendBtn" class="btn btn-primary">Send</button>
+        </div>
+
+        <div class="mt-2 d-flex justify-content-between align-items-center">
+            <input type="file" id="fileInput" class="form-control form-control-sm" />
+        </div>
+    </div>
+</div>
+
+<!-- Context Menu -->
+<div id="contextMenu">
+    <div id="replyOption">Reply</div>
+    <div id="forwardOption">Forward</div>
+</div>
+
+<!-- Forward Modal -->
+<div class="modal fade" id="forwardModal" tabindex="-1" aria-labelledby="forwardModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Forward Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <select id="forwardGroupSelect" class="form-select">
+                    <option value="">-- Select Group --</option>
+                    <option>Group 1</option>
+                    <option>Group 2</option>
+                    <option>Group 3</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button id="confirmForward" class="btn btn-sm btn-primary">Forward</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #dbe7f5;
-            height: 100vh;
-            overflow: hidden;
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/chatlogic.js"></script>
+    <script>
+        function toggleChat() {
+            const body = document.getElementById("chatBody");
+            body.style.display = body.style.display === "none" ? "flex" : "none";
         }
+    </script>
 
-        /* Floating Chat Bubble Button */
-        .chat-fab {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: #0078D4;
-            color: white;
-            font-size: 24px;
-            border: none;
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            cursor: pointer;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Chat Container (Initially Hidden) */
-        .chat-container {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 320px;
-            height: 450px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
-            z-index: 999;
-            display: none; /* initially hidden */
-            flex-direction: column;
-            transition: all 0.3s ease;
-        }
-
-
-
-        .chat-header {
-            background-color: #0078D4;
-            color: white;
-            padding: 12px 16px;
-            font-size: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            font-size: 12px;
-            line-height: 1.3;
-            word-break: break-word;
-            background-color: #f5f8fb;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-footer {
-            padding: 8px 10px;
-            /*display: flex;*/
-            align-items: center;
-            border-top: 1px solid #ccc;
-            background-color: white;
-        }
-
-        #msg {
-            flex: 1;
-            font-size: 12px;
-            padding: 6px 8px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            outline: none;
-        }
-
-        .send-btn {
-            background-color: #0078D4;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 16px;
-            margin-left: 6px;
-            cursor: pointer;
-        }
-
-        .message .forwarded-label {
-            font-size: 11px;
-            color: #888;
-            font-style: italic;
-            margin-bottom: 4px;
-        }
-
-        .send-btn:hover {
-            background-color: #005a9e;
-        }
-
-        .message {
-            display: inline-block;
-            margin-bottom: 8px;
-            max-width: 70%;
-            font-size: 12px;
-            word-wrap: break-word;
-            line-height: 1.3;
-            padding: 6px 10px;
-            border-radius: 14px;
-            position: relative;
-        }
-
-        .label-tag {
-            font-size: 10px;
-            font-weight: 500;
-            color: #555;
-            margin-bottom: 3px;
-            text-transform: uppercase;
-            opacity: 0.8;
-        }
-
-        .message.sent {
-            align-self: flex-end;
-            background-color: #d1f7c4;
-            text-align: right;
-            border-top-right-radius: 4px;
-        }
-
-        /* Received message (left aligned) */
-        .message.received {
-            align-self: flex-start;
-            background-color: #f0f0f0;
-            text-align: left;
-            border-top-left-radius: 4px;
-        }
-
-        .timestamp {
-            font-size: 10px;
-            color: #777;
-            margin-top: 2px;
-        }
-
-        .chat-file-link {
-            display: block;
-            margin: 3px 0;
-            font-size: 12px;
-            color: #0078D4;
-            text-decoration: none;
-        }
-
-        .group-select-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-        }
-
-        .date-separator {
-            background-color: #e1f3ff;
-            color: #333;
-            padding: 4px 12px;
-            margin: 10px auto;
-            font-size: 12px;
-            border-radius: 12px;
-            text-align: center;
-            width: fit-content;
-            max-width: 80%;
-            font-weight: 500;
-            box-shadow: 0 0 2px rgba(0,0,0,0.2);
-        }
-
-
-        .context-menu {
-            position: absolute;
-            display: none;
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-            list-style: none;
-            padding: 4px 0;
-            z-index: 9999;
-            width: 100px;
-            font-size: 12px;
-        }
-
-        .message.disappearing {
-            background-color: #fff1c1;
-        }
-
-        .context-menu li {
-            padding: 6px 12px;
-            cursor: pointer;
-        }
-
-            .context-menu li:hover {
-                background-color: #f0f0f0;
-            }
-
-        .edited-label {
-            font-size: 10px;
-            color: #999;
-            margin-left: 4px;
-        }
-
-        .chat-sidebar {
-            position: absolute;
-            top: 0;
-            left: -250px; /* hidden by default */
-            width: 250px;
-            height: 100%;
-            background-color: #007bff; /* WhatsApp-like blue */
-            color: white;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
-            transition: left 0.3s ease-in-out;
-            z-index: 100;
-            padding-top: 60px;
-            border-radius: 8px 0 0 8px;
-            overflow-y: auto;
-        }
-
-        .fw-label {
-            font-size: 11px;
-            font-weight: 500;
-            color: #0078D4;
-            margin-bottom: 2px;
-        }
-
-        .reply-preview {
-            background-color: #f1f1f1;
-            padding: 4px 6px;
-            border-left: 3px solid #2196F3;
-            margin-bottom: 5px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-
-        .reply-box {
-            border-left: 4px solid #007bff;
-            background-color: #f1f1f1;
-            padding: 6px 8px;
-            font-size: 13px;
-            border-radius: 5px;
-        }
-
-        .chat-sidebar.show {
-            left: 0;
-        }
-
-        .sidebar-header {
-            position: absolute;
-            top: 0;
-            width: 100%;
-            background: #0056b3;
-            padding: 12px 16px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #ffffff33;
-        }
-
-        .group-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-            .group-list li {
-                padding: 14px 20px;
-                cursor: pointer;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-                .group-list li:hover {
-                    background-color: #3390ff;
-                }
-
-        mark {
-            background-color: yellow;
-            color: black;
-            padding: 0 2px;
-            border-radius: 3px;
-        }
-
-        .highlight-reply {
-            background-color: #ffffcc !important;
-        }
-
-    </style>
-
-    <style>
-        .hidden {
-            display: none !important;
-        }
-
-        .highlight-reply {
-            animation: highlightAnim 2s ease-out;
-            border: 2px dashed #0078D4;
-            background-color: #fff7d4;
-        }
-
-        .highlighted {
-            background-color: yellow;
-            transition: background-color 0.5s ease;
-        }
-
-        @@keyframes highlightAnim {
-            0% {
-                background-color: #ffe066;
-            }
-
-            100% {
-                background-color: #fff7d4;
-            }
-        }
-    </style>
-
-
-</head>
-<body>
-    <!-- Floating Chat Bubble Button -->
-    <button id="chatToggleBtn" onclick="toggleChatWindow()" class="chat-fab">
-        💬
-    </button>
-
-    <!-- CHAT BOX -->
-    <div class="chat-container">
-        <div class="chat-header">
-            <button class="btn btn-sm btn-light me-2" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <!-- Group Sidebar (Inside Chat Container) -->
-            <div id="chatSidebar" class="chat-sidebar">
-                <div class="sidebar-header">
-                    <span>Select Group</span>
-                    <button onclick="toggleSidebar()" class="btn-close btn-sm"></button>
-                </div>
-                <ul class="group-list">
-                    <li onclick="selectGroup('Group1')">Group 1</li>
-                    <li onclick="selectGroup('Group2')">Group 2</li>
-                    <li onclick="selectGroup('Group3')">Group 3</li>
-                    <li onclick="selectGroup('Group4')">Group 4</li>
-                    <li onclick="selectGroup('Group5')">Group 5</li>
-                </ul>
-            </div>
-            <span id="group-title">TeamChat - <span id="current-group">Group 1</span></span>
-            <div id="typingIndicator" style="font-size: 12px; color: #fff; display: none;">Someone is typing...</div>
-
-            <span style="font-size: 14px;">Welcome, <strong>@username</strong></span>
-
-            <div class="dropdown">
-                <button class="btn btn-light" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#" onclick="toggleSearch()">🔍 Search</a></li>
-                    <li><a class="dropdown-item" href="#" onclick="clearChatWindow()">🧹 Clear Chat</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#" onclick="logout()">🚪 Logout</a></li>
-                </ul>
-            </div>
-        </div>
-        <div id="searchContainer" style="display: none; padding: 10px;">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search messages..." oninput="searchMessages()" />
-        </div>
-
-        <div id="pinnedMessageBox" class="pinned-message-box d-none">
-            📌 <span id="pinnedText"></span>
-            <button class="btn btn-sm btn-link text-danger p-0" onclick="unpinMessage()" style="font-size: 12px;">✖</button>
-        </div>
-
-        <div id="notif-list"></div>
-        <span id="notif-count" style="display: none;">0</span>
-
-
-        <div class="chat-messages" id="chatBox"></div>
-        <div class="chat-footer">
-            <!-- Reply Preview Box -->
-            <!-- Reply Preview Box -->
-            <div id="replyPreview" class="flex-column bg-light border-start border-4 border-primary p-2 mb-1 rounded hidden" style="max-width: 300px;">
-                <small id="replySender" class="text-primary fw-bold">Sender Name</small>
-                <div id="replyMessage" class="text-muted small">Original message here...</div>
-                <button onclick="cancelReply()" class="btn-close btn-sm align-self-end mt-1" aria-label="Cancel"></button>
-            </div>
-
-
-            <input type="text" id="msg" placeholder="Type a message..." style="font-size: 13px;" />
-            <input type="file" id="fileInput" style="display: none;" />
-            <button class="send-btn" onclick="sendMessage()">➤</button>
-            <button class="send-btn" onclick="document.getElementById('fileInput').click()">📎</button>
-        </div>
-
-
-    </div>
-    <ul id="contextMenu" class="context-menu">
-        <li onclick="editMessage()">✏️ Edit</li>
-        <li onclick="deleteMessage()">🗑️ Delete</li>
-        <li onclick="replyToMessage()">↩️Reply</li>
-        <li onclick="openForwardModal()">📤 Forward</li>
-        <li onclick="handlePin()">📌 Pin</li>
-    </ul>
-    <!-- Forward Message Modal -->
-    <div class="modal fade" id="forwardModal" tabindex="-1" aria-labelledby="forwardModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Forward Message To</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="list-group">
-                        <button class="list-group-item list-group-item-action" onclick="forwardToGroup('Group1')">Group 1</button>
-                        <button class="list-group-item list-group-item-action" onclick="forwardToGroup('Group2')">Group 2</button>
-                        <button class="list-group-item list-group-item-action" onclick="forwardToGroup('Group3')">Group 3</button>
-                        <button class="list-group-item list-group-item-action" onclick="forwardToGroup('Group4')">Group 4</button>
-                        <button class="list-group-item list-group-item-action" onclick="forwardToGroup('Group5')">Group 5</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</body>
-
-<script>
-    const username = '@username'.trim().toLowerCase();
-    let currentGroup = '';
-    let connection;
-    let pinnedMessageId = null;
-    let selectedMessage = null;
-    let lastRenderedDate = "";
-
-    function initSignalR() {
-        connection = new signalR.HubConnectionBuilder()
-            .withUrl("/chathub")
-            .build();
-
-        connection.start().then(() => console.log("SignalR connected"));
-
-        connection.on("ReceiveMessage", (msg) => {
-            addMessageToChat(msg);
-            if (msg.to === currentGroup && msg.from.toLowerCase() !== username) {
-                notifyGroup(msg);
-            }
-        });
-            // Handle incoming typing
-    connection.on("ReceiveTyping", function (username) {
-        if (username === currentUsername) return; // don’t show if it’s yourself
-        const typingIndicator = document.getElementById("typingIndicator");
-        typingIndicator.innerText = `${username} is typing...`;
-        typingIndicator.style.display = "block";
-
-        // Hide after 2.5s
-        clearTimeout(typingIndicator.timeout);
-        typingIndicator.timeout = setTimeout(() => {
-            typingIndicator.style.display = "none";
-        }, 2500);
-    });
-
-        let typingTimeout;
-    const msgBox = document.getElementById("msg");
-
-    msgBox.addEventListener("input", function () {
-        clearTimeout(typingTimeout);
-        connection.invoke("Typing", currentGroup, username); // send typing event
-        typingTimeout = setTimeout(() => {
-            // silence after pause
-        }, 2500);
-    });
-    }
-
-
-    //     function initSignalR() {
-    //     connection = new signalR.HubConnectionBuilder()
-    //         .withUrl("/chathub")
-    //         .build();
-
-    //     connection.on("ReceiveTyping", function (username) {
-    //         if (username === currentUsername) return;
-    //         const typingIndicator = document.getElementById("typingIndicator");
-    //         typingIndicator.innerText = `${username} is typing...`;
-    //         typingIndicator.style.display = "block";
-
-    //         clearTimeout(typingIndicator.timeout);
-    //         typingIndicator.timeout = setTimeout(() => {
-    //             typingIndicator.style.display = "none";
-    //         }, 2500);
-    //     });
-
-    //     connection.start()
-    //         .then(() => {
-    //             console.log("SignalR connected ✅");
-    //             selectGroup("Group1"); // ✅ Moved here
-    //         })
-    //         .catch(err => console.error("SignalR failed to connect:", err));
-    // }
-    let replyToMessageId = null;
-    let replyToSender = '';
-    let replyToText = '';
-
-        function replyToMessage() {
-        const messageText = selectedMessage.querySelector(".message-text")?.innerText || "[file]";
-        const senderName = selectedMessage.querySelector(".sender-name")?.innerText || username;
-
-        replyToText = messageText;
-        replyToSender = senderName;
-        replyToMessageId = selectedMessage.getAttribute("data-id");
-
-        document.getElementById("replySender").innerText = senderName;
-        document.getElementById("replyMessage").innerText = messageText;
-
-        const preview = document.getElementById("replyPreview");
-        preview.classList.remove("hidden");
-        preview.style.display = "flex";
-    }
-
-
-    function cancelReply() {
-        replyToMessageId = null;
-        replyToSender = '';
-        replyToText = '';
-
-        const preview = document.getElementById("replyPreview");
-        if (preview) {
-            preview.classList.add("hidden");
-            preview.style.display = "none";
-        }
-    }
-
-
-
-
-
-    function toggleChatWindow() {
-        const chatContainer = document.querySelector('.chat-container');
-        const toggleBtn = document.getElementById('chatToggleBtn');
-        if (chatContainer.style.display === 'none' || chatContainer.style.display === '') {
-            chatContainer.style.display = 'flex';
-            toggleBtn.innerText = '❌';
-        } else {
-            chatContainer.style.display = 'none';
-            toggleBtn.innerText = '💬';
-        }
-    }
-
-    function toggleSidebar() {
-      const sidebar = document.getElementById("chatSidebar");
-      sidebar.classList.toggle("show");
-    }
-
-
-         let isMinimized = false;
-
-
-
-        function insertDateSeparator(dateString) {
-        const msgDate = new Date(dateString);
-        const now = new Date();
-
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const msgDay = new Date(msgDate.getFullYear(), msgDate.getMonth(), msgDate.getDate());
-
-        const msPerDay = 1000 * 60 * 60 * 24;
-        const diffDays = Math.floor((today - msgDay) / msPerDay);
-
-        let label = "";
-        if (diffDays === 0) label = "Today";
-        else if (diffDays === 1) label = "Yesterday";
-        else {
-            const day = msgDate.getDate().toString().padStart(2, '0');
-            const month = (msgDate.getMonth() + 1).toString().padStart(2, '0');
-            const year = msgDate.getFullYear();
-            label = `${day}/${month}/${year}`;
-        }
-
-        if (lastRenderedDate === label) return null; // Already added
-
-        lastRenderedDate = label;
-
-        const separator = document.createElement("div");
-        separator.className = "date-separator";
-        separator.innerText = label;
-        return separator;
-    }
-
-
-            function openForwardModal() {
-        if (!selectedMessage) return;
-        const msgText = selectedMessage.querySelector(".message-text")?.innerText || "";
-        localStorage.setItem("messageToForward", msgText); // store message temporarily
-        new bootstrap.Modal(document.getElementById('forwardModal')).show();
-    }
-
-    function forwardToGroup(targetGroup) {
-        if (!selectedMessage) return;
-
-        const originalText = selectedMessage.querySelector(".message-text")?.innerText || "Forwarded content";
-
-        const forwardData = {
-            Message: originalText,
-            To: targetGroup,
-            MessageTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            From: username,
-            IsForwarded: "true",
-            ForwardedTo: targetGroup
-        };
-
-        $.ajax({
-            url: '/api/message/SendMessage',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(forwardData),
-            success: () => console.log("Message forwarded"),
-            error: (xhr, status, error) => console.error("Forward failed")
-        });
-    }
-
-
-    function pinMessage(id,text) {
-
-
-        pinnedMessageId = id ;
-        document.getElementById("pinnedMessageText").innerText = text;
-        document.getElementById("pinnedMessageContainer").style.display = "block";
-    }
-
-
-    function unpinMessage() {
-        const pinnedBox = document.getElementById("pinnedMessageBox");
-        const pinnedText = document.getElementById("pinnedText");
-
-        if (pinnedBox && pinnedText) {
-            pinnedBox.classList.add("d-none");
-            pinnedText.innerText = "";
-            localStorage.removeItem("pinnedMessage");
-        } else {
-            console.warn("Pinned message box or text not found.");
-        }
-    }
-
-
-    function getDisappearingTimer(groupName) {
-        return parseInt(localStorage.getItem(`timer_${groupName}`) || "0");
-    }
-        function scheduleDisappearance(msgObj, delaySeconds) {
-        setTimeout(() => {
-            const el = document.querySelector(`[data-id="${msgObj.MessageId}"]`);
-            if (el) el.remove(); // Remove from UI
-        }, delaySeconds * 1000);
-    }
-
-
-    function selectGroup(groupName) {
-        if (!connection) return;
-
-        if (currentGroup) {
-            connection.invoke("LeaveGroup", currentGroup);
-            document.getElementById(currentGroup + "-btn")?.classList.remove("active-group");
-        }
-
-        currentGroup = groupName;
-        connection.invoke("JoinGroup", groupName);
-        document.getElementById("group-title").innerText = "TeamChat - " + groupName;
-        document.getElementById(groupName + "-btn")?.classList.add("active-group");
-
-    loadChatHistory(groupName);
-
-    const notifList = document.getElementById("notif-list");
-    if (notifList) notifList.innerHTML = "";
-
-    const notifCount = document.getElementById("notif-count");
-    if (notifCount) {
-        notifCount.textContent = "0";
-        notifCount.style.display = "none";
-    }
-
-    }
-
-    function sendMessage() {
-        const messageText = document.getElementById("msg").value.trim();
-        if (!currentGroup) return alert("Select a group first!");
-        if (messageText === "") return;
-
-        const messageData = {
-            Message: messageText,
-            To: currentGroup,
-            MessageTime: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            From: username,
-            IsForwarded: "false",
-            ForwardedTo:  "",
-            IsReplied: replyToMessageId ? "true" : "false",
-            RepliedTo: replyToMessageId || ""
-        };
-
-    // Handle reply data if available
-    if (replyToMessageId) {
-        messageData.replyTo = {
-            messageId: replyToMessageId,
-            sender: replyToSender,
-            message: replyToText
-        };
-    }
-        $.ajax({
-            url: '/api/message/SendMessage',
-            type: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(messageData),
-        success: () => {
-            debugger;
-            document.getElementById("msg").value = "";
-                // ✅ Manually add message to chat UI before SignalR sends it back
-                addMessageToChat({
-                    ...messageData,
-                    MessageId: "local-" + Date.now(), // temporary ID until server sends real one
-                });
-                // Clear reply preview after sending
-                if (replyToMessageId) cancelReply();
-                // ✅ Reset forwarding state (if any)
-                isForwarding = false;
-            },
-            error: function (xhr, status, error) {
-                alert("Error sending message");
-            }
-        });
-    }
-
-        function addMessageToChat(msgObj) {
-            debugger;
-        const chatBox = document.getElementById("chatBox");
-        const div = document.createElement("div");
-        const isSender = (msgObj.from || "").toLowerCase() === username;
-        div.className = "message " + (isSender ? "sent" : "received");
-        div.setAttribute("data-id", msgObj.messageId); // for right-click targeting
-        div.setAttribute("data-id", msgObj.messageId);
-
-        if (msgObj.replyTo?.messageId) {
-        div.setAttribute("data-reply-id", msgObj.replyTo.messageId);
-        }
-
-        let content = '';
-        if (msgObj.isFile) {
-            const ext = msgObj.fileName?.split('.').pop().toLowerCase();
-            if (["jpg", "jpeg", "png", "gif", "webp"].includes(ext)) {
-                content = `<img src="${msgObj.message}" alt="${msgObj.fileName}" style="max-width:200px;" />`;
-            } else {
-                content = `<a href="${msgObj.message}" target="_blank">${msgObj.fileName}</a>`;
-            }
-        } else {
-            content = `<span class="message-text">${msgObj.message}</span>`;
-        }
-
-       // Reply preview (if any)
-             // Reply preview (if any)
-       // let replyHtml = "";
-       //  if (msgObj.replyTo) {
-       //  replyHtml = `
-       //      <div class="reply-box mb-1 p-2 rounded"
-       //           style="background: #f1f1f1; border-left: 4px solid #007bff; cursor: pointer;"
-       //           onclick="scrollToOriginalMessage('${msgObj.replyTo.messageId}')">
-       //          <small style="font-weight: bold; color: #333;">${msgObj.replyTo.sender}</small><br/>
-       //          <small style="color: #666;">${msgObj.replyTo.message}</small>
-       //      </div>
-       //  `;
-       //  }
-    let replyHtml = "";
-    if (msgObj.IsReplied === "true" && msgObj.RepliedTo) {
-        const replySender = msgObj.replySender;
-        const replyMessage = msgObj.repliedText;
-
-        replyHtml = `
-            <div class="reply-box mb-1 p-2 rounded" style="background: #f1f1f1; border-left: 4px solid #007bff;">
-                <small class="text-primary fw-bold">${replySender}</small><br/>
-                <small class="text-muted">${replyMessage}</small>
-            </div>
-        `;
-    }
-
-
-
-
-        // Make message clickable and highlight the replied message
-    if (msgObj.replyTo?.messageId) {
-        div.setAttribute("data-reply-to", msgObj.replyTo.messageId);
-        div.addEventListener("click", function () {
-            const target = document.querySelector(`[data-id="${msgObj.replyTo.messageId}"]`);
-            if (target) {
-                target.scrollIntoView({ behavior: "smooth", block: "center" });
-                target.classList.add("highlight-reply");
-                setTimeout(() => target.classList.remove("highlight-reply"), 2000);
-            }
-        });
-    }
-
-
-
-        // ✅ Forwarded label like WhatsApp
-        const forwardedLabel = msgObj.isForwarded === "true"
-            ? `<div style="font-size: 11px; color: #888; font-style: italic;">Forwarded</div>`
-            : "";
-                // Edited label
-    const editedLabel = msgObj.isEdited
-        ? `<span style="font-size: 11px; color: gray;">(edited)</span>`
-        : "";
-
-        // ✅ Inject all into final HTML
-        div.innerHTML = `
-            ${!isSender ? `<div class="sender-name">${msgObj.from}</div>` : ''}
-            ${forwardedLabel}
-            ${replyHtml}
-            ${content} ${editedLabel}
-            <div class="timestamp">${msgObj.messageTime}</div>
-        `;
-
-        chatBox.appendChild(div);
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-        }
-
-         function scrollToOriginalMessage(messageId) {
-         const original = document.querySelector(`[data-id="${messageId}"]`);
-        if (original) {
-            original.scrollIntoView({ behavior: "smooth", block: "center" });
-            original.classList.add("highlight-reply");
-            setTimeout(() => original.classList.remove("highlight-reply"), 2000);
-        }
-    }
-
-
-    function loadChatHistory(groupName) {
-        fetch(`/api/message/GetHistory?groupName=${groupName}`)
-            .then(res => res.json())
-            .then(messages => {
-                const chatBox = document.getElementById("chatBox");
-                chatBox.innerHTML = '';
-                messages.forEach(msg => {
-                    addMessageToChat(msg);
-
-                    if (msg.DisappearAfter) {
-                        const sentAt = new Date(msg.MessageTime);
-                        const now = new Date();
-                        const diff = Math.floor((now - sentAt) / 1000);
-                        const remaining = msg.DisappearAfter - diff;
-
-                        if (remaining > 0) {
-                            scheduleDisappearance(msg, remaining);
-                        } else {
-                            // Already expired, do not show
-                            document.querySelector(`[data-id="${msg.MessageId}"]`)?.remove();
-                        }
-                    }
-                });
-            });
-    }
-
-
-    function notifyGroup(msg) {
-        const notif = document.getElementById("notif-count");
-        notif.textContent = parseInt(notif.textContent || "0") + 1;
-        notif.style.display = "inline-block";
-
-        const item = document.createElement("div");
-        item.style.padding = "5px";
-        item.style.borderBottom = "1px solid #ddd";
-        item.textContent = `${msg.from} sent a message in ${msg.to}`;
-        document.getElementById("notif-list").appendChild(item);
-    }
-
-    function toggleNotification() {
-        const notifList = document.getElementById("notif-list");
-        notifList.style.display = notifList.style.display === "block" ? "none" : "block";
-        document.getElementById("notif-count").textContent = "0";
-        document.getElementById("notif-count").style.display = "none";
-    }
-
-    function toggleSearch() {
-        const container = document.getElementById("searchContainer");
-        const input = document.getElementById("searchInput");
-
-        // Toggle visibility
-        container.style.display = container.style.display === "none" ? "block" : "none";
-
-        // Clear input and reset highlights
-        input.value = "";
-        searchMessages(); // Reset previous highlights
-    }
-
-    function searchMessages() {
-        const query = document.getElementById("searchInput").value.trim().toLowerCase();
-
-        document.querySelectorAll(".message-text").forEach(msgSpan => {
-            const original = msgSpan.textContent || msgSpan.innerText;
-            const lower = original.toLowerCase();
-
-            if (query && lower.includes(query)) {
-                const regex = new RegExp(`(${query})`, "gi");
-                msgSpan.innerHTML = original.replace(regex, `<mark>$1</mark>`);
-            } else {
-                msgSpan.innerHTML = original; // Remove previous highlights
-            }
-        });
-    }
-
-
-    function logout() {
-        window.location.href = '/Account/Logout';
-    }
-            function clearChatWindow() {
-      if (confirm("Are you sure you want to clear the chat window?")) {
-        document.getElementById("chatBox").innerHTML = "";
-      }
-    }
-    async function deleteMessage() {
-        const messageElement = document.querySelector(`[data-id="${selectedMessageId}"]`);
-        if (confirm("Are you sure you want to delete this message?")) {
-            // Remove from frontend
-            messageElement.remove();
-
-            // Inform backend
-            await fetch("/api/message/DeleteMessage", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    messageId: selectedMessageId,
-                    groupName: currentGroup
-                })
-            });
-        }
-
-        hideContextMenu();
-    }
-    async function editMessage() {
-        const messageElement = document.querySelector(`[data-id="${selectedMessageId}"]`);
-        const oldText = messageElement.querySelector(".message-text").textContent;
-        const newText = prompt("Edit your message:", oldText);
-
-        if (newText !== null) {
-            // Update frontend
-            messageElement.querySelector(".message-text").textContent = newText;
-
-            // Send to backend
-            await fetch("/api/message/EditMessage", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    messageId: selectedMessageId,
-                    newMessage: newText,
-                    groupName: currentGroup
-                })
-            });
-        }
-
-        hideContextMenu();
-    }
-
-    function renderMessage(msgObj) {
-        const isDeleted = msgObj.isDeleted;
-        const isEdited = msgObj.isEdited;
-        let messageText = msgObj.message;
-        let contentHtml = "";
-            const messageDiv = document.createElement("div");
-    messageDiv.classList.add("message");
-        if (isDeleted) {
-            messageText = "<i>This message was deleted</i>";
-        } else {
-            if (msgObj.fileUrl) {
-                const fileExt = msgObj.fileName.split('.').pop().toLowerCase();
-                if (["jpg", "jpeg", "png", "gif", "bmp"].includes(fileExt)) {
-                    contentHtml += `<img src="${msgObj.fileUrl}" alt="${msgObj.fileName}" style="max-width: 200px; display: block; margin-top: 5px;" />`;
-                } else {
-                    contentHtml += `<a href="${msgObj.fileUrl}" target="_blank" style="display:block; margin-top:5px;">📎 ${msgObj.fileName}</a>`;
-                }
-            }
-
-            if (messageText) {
-                contentHtml += `<span>${messageText}`;
-                if (isEdited) {
-                    contentHtml += ` <span style="font-size: 0.75rem; color: gray;">(edited)</span>`;
-                }
-                contentHtml += `</span>`;
-            }
-        }
-            let labels = '';
-            debugger;
-    if (msgObj.isForwarded === "true") {
-        labels += `<div class="fw-label">Forwarded</div>`;
-    }
-
-    div.innerHTML = `
-        ${!isSender ? `<div class="sender-name">${msgObj.from}</div>` : ''}
-        ${labels}
-        ${content}
-        <div class="timestamp">${msgObj.messageTime}</div>
-    `;
-
-         messageDiv.innerHTML = `
-        <div>
-            <strong>${message.username}</strong>: ${message.text}
-        </div>
-        <div style="margin-top: 4px;">
-            <div class="pin-option" data-id="${message.id}" data-text="${encodeURIComponent(message.text)}">📌 Pin</div>
-            <button onclick="replyToMessage('${message.id}')">↩️ Reply</button>
-            <button onclick="forwardMessage('${message.id}')">📤 Forward</button>
-        </div>
-    `;
-        const deleteButton = isDeleted
-            ? ""
-            : `<button class="delete-btn" onclick="deleteMessage('${msgObj.messageId}')">🗑️</button>`;
-
-        const messageHtml = `
-            <div class="message-item" data-id="${msgObj.messageId}">
-                <div><strong>${msgObj.from}:</strong> ${contentHtml}</div>
-                <div class="timestamp">${msgObj.messageTime}</div>
-                ${deleteButton}
-            </div>
-        `;
-
-        $('#chatWindow').append(messageHtml);
-        document.getElementById("messageArea").appendChild(messageDiv);
-    }
-
-
-    function uploadFile() {
-        const fileInput = document.getElementById("fileInput");
-        const file = fileInput.files[0];
-        if (!file || !currentGroup || !username) {
-            alert("Missing file or group/user info.");
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("groupName", currentGroup);
-        formData.append("fromUser", username);
-
-        fetch('/api/message/UploadFile', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(res => {
-            console.log("File uploaded:", res);
-            fileInput.value = "";
-        })
-        .catch(err => {
-            alert("File upload failed.");
-            console.error(err);
-        });
-    }
-
-        function scrollToOriginalMessage(messageId) {
-        const target = document.querySelector(`[data-id="${messageId}"]`);
-        if (target) {
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            target.classList.add("highlighted");
-
-            // Remove highlight after 2s
-            setTimeout(() => {
-                target.classList.remove("highlighted");
-            }, 2000);
-        } else {
-            alert("Original message not found.");
-        }
-    }
-
-
-    document.getElementById("fileInput").addEventListener("change", uploadFile);
-
-    document.getElementById("msg").addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-            sendMessage();
-            e.preventDefault();
-        }
-    });
-
-       window.onload = () => {
-        initSignalR();
-    };
-
-
-        let selectedMessageId = null;
-
-    document.addEventListener("contextmenu", function (e) {
-        const message = e.target.closest(".message");
-        if (message) {
-            e.preventDefault();
-            selectedMessage = message;
-            selectedMessageId = message.getAttribute("data-id");
-
-            const contextMenu = document.getElementById("contextMenu");
-            contextMenu.style.top = `${e.pageY}px`;
-            contextMenu.style.left = `${e.pageX}px`;
-            contextMenu.style.display = "block";
-        } else {
-            hideContextMenu();
-        }
-    });
-    //     document.addEventListener("click", function (e) {
-
-    //     if (e.target.classList.contains("pin-option")) {
-
-    //         const id = e.target.getAttribute("data-id");
-    //         const text = decodeURIComponent(e.target.getAttribute("message-text"));
-    //         pinMessage(id, text);
-    //     }
-    // });
-
-        document.querySelectorAll('.message sent').forEach(msg => {
-        msg.addEventListener('click', () => {
-            const pinned = extractMessageData(msg);
-            if (pinned) {
-                // do something with the pinned message
-                console.log("Pinned:", pinned);
-                // optionally update UI
-                document.getElementById("pinned-message").textContent = `📌 ${pinned.text}`;
-            }
-        });
-    });
-
-
-
-    document.addEventListener("click", function () {
-        hideContextMenu();
-    });
-
-    function hideContextMenu() {
-        document.getElementById("contextMenu").style.display = "none";
-    }
-
-        function handlePin() {
-        if (!selectedMessage) return;
-
-        const messageData = extractMessageData(selectedMessage);
-        if (messageData) {
-            document.getElementById("pinnedText").innerText = messageData.text;
-            document.getElementById("pinnedMessageBox").classList.remove("d-none");
-
-            // Optionally save it locally
-            localStorage.setItem("pinnedMessage", messageData.text);
-        }
-
-        hideContextMenu();
-    }
-
-
-    function extractMessageData(messageElement) {
-        if (!messageElement) return null;
-
-        const dataId = messageElement.getAttribute("data-id");
-        const messageText = messageElement.querySelector(".message-text")?.textContent.trim();
-
-        if (dataId && messageText) {
-            return {
-                id: dataId,
-                text: messageText
-            };
-        } else {
-            return null;
-        }
-    }
-
-
-    // Example usage:
-
-
-
-</script>
-</html>

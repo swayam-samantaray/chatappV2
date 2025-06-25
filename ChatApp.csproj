@@ -15,4 +15,8 @@
     <Folder Include="Uploads\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\chatlogic.js" />
+  </ItemGroup>
+
 </Project>

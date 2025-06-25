@@ -25,28 +25,65 @@ namespace ChatApp.Controllers
         public async Task<IActionResult> SendMessage([FromBody] MessageDetails message)
         {
             message.MessageId = Guid.NewGuid().ToString();
-            message.IsForwarded ??= "false";         // Default to "false" if not forwarded
-            message.ForwardedTo ??= "";              // Default to empty string
+            message.MessageTime ??= DateTime.Now.ToString("hh:mm tt");
+            message.IsForwarded ??= "false";
+            message.ForwardedTo ??= "";
             message.IsReplied ??= "false";
             message.RepliedTo ??= "";
 
-            string directory = "ChatLogs";
+            var directory = Path.Combine("ChatLogs");
             Directory.CreateDirectory(directory);
 
-            string filePath = Path.Combine(directory, $"{message.To}.txt");
-            string jsonLine = JsonSerializer.Serialize(message);
-            await System.IO.File.AppendAllLinesAsync(filePath, new[] { jsonLine });
+            var filePath = Path.Combine(directory, $"{message.To}.txt");
+            var json = JsonSerializer.Serialize(message);
+            await System.IO.File.AppendAllLinesAsync(filePath, new[] { json });
 
             await _chatHub.Clients.Group(message.To).SendAsync("ReceiveMessage", message);
+
+            //await _chatHub.Clients.Group(message.To).SendAsync("ReceiveMessage", message);
             return Ok(new { status = "Message Sent" });
         }
 
+        [HttpPost("UploadFile")]
+        public async Task<IActionResult> UploadFile([FromForm] IFormFile file, [FromForm] string groupName, [FromForm] string fromUser)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("File is empty");
+
+            var uploadsFolder = Path.Combine("wwwroot", "uploads");
+            Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = Guid.NewGuid() + "_" + Path.GetFileName(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            var message = new MessageDetails
+            {
+                MessageId = Guid.NewGuid().ToString(),
+                Message = "/uploads/" + fileName,
+                From = fromUser,
+                To = groupName,
+                MessageTime = DateTime.Now.ToString("hh:mm tt"),
+                IsFile = true,
+                FileName = file.FileName
+            };
+
+            var logPath = Path.Combine("ChatLogs", $"{groupName}.txt");
+            await System.IO.File.AppendAllLinesAsync(logPath, new[] { JsonSerializer.Serialize(message) });
+
+            await _chatHub.Clients.Group(groupName).SendAsync("ReceiveMessage", message);
+            return Ok(new { status = "File uploaded", message });
+        }
 
         [HttpGet("GetHistory")]
         public IActionResult GetHistory([FromQuery] string groupName)
         {
-            List<MessageDetails> history = new List<MessageDetails>();
-            string filePath = Path.Combine("ChatLogs", $"{groupName}.txt");
+            var history = new List<MessageDetails>();
+            var filePath = Path.Combine("ChatLogs", $"{groupName}.txt");
 
             if (System.IO.File.Exists(filePath))
             {
@@ -66,64 +103,33 @@ namespace ChatApp.Controllers
             return Ok(history);
         }
 
-        [HttpGet("{groupName}")]
-        public IActionResult GetMessages(string groupName)
-        {
-            string filePath = Path.Combine("ChatLogs", $"{groupName}.txt");
-
-            if (!System.IO.File.Exists(filePath))
-                return Ok(new List<MessageDetails>());
-
-            var messages = System.IO.File.ReadAllLines(filePath)
-                .Where(line => !string.IsNullOrWhiteSpace(line))
-                .Select(line => JsonSerializer.Deserialize<MessageDetails>(line))
-                .ToList();
-
-            return Ok(messages);
-        }
-
-        [HttpDelete("ClearChat")]
-        public IActionResult ClearChat([FromQuery] string groupName)
-        {
-            string filePath = Path.Combine("ChatLogs", $"{groupName}.txt");
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.WriteAllText(filePath, "");
-                return Ok(new { status = "Chat cleared" });
-            }
-            return NotFound("Chat file not found");
-        }
-
         [HttpPost("EditMessage")]
         public IActionResult EditMessage([FromBody] EditMessageRequest request)
         {
-            string filePath = Path.Combine("ChatLogs", $"{request.GroupName}.txt");
-
-            if (!System.IO.File.Exists(filePath))
-                return NotFound("Chat file not found");
+            var filePath = Path.Combine("ChatLogs", $"{request.GroupName}.txt");
+            if (!System.IO.File.Exists(filePath)) return NotFound();
 
             var messages = System.IO.File.ReadAllLines(filePath)
                 .Select(line => JsonSerializer.Deserialize<MessageDetails>(line))
                 .ToList();
 
-            var message = messages.FirstOrDefault(m => m.MessageId == request.MessageId);
-            if (message != null)
+            var target = messages.FirstOrDefault(m => m.MessageId == request.MessageId);
+            if (target != null)
             {
-                message.Message = request.NewMessage;
-                message.MessageTime = DateTime.Now.ToString("hh:mm tt");
+                target.Message = request.NewMessage;
+                target.IsEdited = true;
+                target.MessageTime = DateTime.Now.ToString("hh:mm tt");
             }
 
             System.IO.File.WriteAllLines(filePath, messages.Select(m => JsonSerializer.Serialize(m)));
-            return Ok(new { status = "Message Edited" });
+            return Ok(new { status = "Edited" });
         }
 
         [HttpPost("DeleteMessage")]
         public IActionResult DeleteMessage([FromBody] DeleteMessageRequest request)
         {
-            string filePath = Path.Combine("ChatLogs", $"{request.GroupName}.txt");
-
-            if (!System.IO.File.Exists(filePath))
-                return NotFound("Chat file not found");
+            var filePath = Path.Combine("ChatLogs", $"{request.GroupName}.txt");
+            if (!System.IO.File.Exists(filePath)) return NotFound();
 
             var messages = System.IO.File.ReadAllLines(filePath)
                 .Select(line => JsonSerializer.Deserialize<MessageDetails>(line))
@@ -131,70 +137,19 @@ namespace ChatApp.Controllers
                 .ToList();
 
             System.IO.File.WriteAllLines(filePath, messages.Select(m => JsonSerializer.Serialize(m)));
-            return Ok(new { status = "Message Deleted" });
+            return Ok(new { status = "Deleted" });
         }
 
-        [HttpPost("UploadFile")]
-        public async Task<IActionResult> UploadFile([FromForm] IFormFile file, [FromForm] string groupName, [FromForm] string fromUser)
+        [HttpDelete("ClearChat")]
+        public IActionResult ClearChat([FromQuery] string groupName)
         {
-            if (file == null || file.Length == 0)
-                return BadRequest("File is empty");
-
-            string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-            Directory.CreateDirectory(uploadsFolder);
-
-            string fileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
-            string filePath = Path.Combine(uploadsFolder, fileName);
-
-            try
-            {
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(stream);
-                }
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Failed to save file: {ex.Message}");
-            }
-
-            string fileUrl = $"/uploads/{fileName}";
-
-            var message = new MessageDetails
-            {
-                MessageId = Guid.NewGuid().ToString(),
-                Message = fileUrl,
-                From = fromUser,
-                To = groupName,
-                MessageTime = DateTime.Now.ToString("hh:mm tt"),
-                IsFile = true,
-                FileName = file.FileName
-            };
-
-            string logPath = Path.Combine("ChatLogs", $"{groupName}.txt");
-            await System.IO.File.AppendAllLinesAsync(logPath, new[] { JsonSerializer.Serialize(message) });
-
-            await _chatHub.Clients.Group(groupName).SendAsync("ReceiveMessage", message);
-
-            return Ok(new { status = "File uploaded", fileUrl, filePath });
-        }
-
-        [HttpDelete("DeleteFile")]
-        public IActionResult DeleteFile(string fileName)
-        {
-            if (string.IsNullOrEmpty(fileName))
-                return BadRequest("Filename is required");
-
-            string nameOnly = Path.GetFileName(fileName); // protect from path injection
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/uploads", nameOnly);
-
+            var filePath = Path.Combine("ChatLogs", $"{groupName}.txt");
             if (System.IO.File.Exists(filePath))
             {
-                System.IO.File.Delete(filePath);
-                return Ok(new { success = true });
+                System.IO.File.WriteAllText(filePath, "");
+                return Ok(new { status = "Cleared" });
             }
-
-            return NotFound(new { error = "File not found" });
+            return NotFound();
         }
     }
 }

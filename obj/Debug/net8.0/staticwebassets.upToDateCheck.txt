@@ -1,3 +1,4 @@
+wwwroot\chatlogic.js
 wwwroot\uploads\02c51eb5-fbe0-47b1-9bd6-ac4c85b56c29_Screenshot 2025-06-04 113236.png
 wwwroot\uploads\2568f7ed-6d81-4681-b27b-d7442a7dfe3a_IMG_20211014_163954.jpg
 wwwroot\uploads\411ca62b-e233-4d2e-acc8-120715c3799c_Screenshot 2025-06-04 120459.png
