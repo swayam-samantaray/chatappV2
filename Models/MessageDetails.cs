@@ -15,8 +15,10 @@ namespace ChatApp.Models
         public bool IsDeleted { get; set; } = false;
         public bool IsFile { get; set; } = false;
         public string FileName { get; set; }
-
-
+        public string IsForwarded { get; set; }
+        public string ForwardedTo { get; set; }
+        public string IsReplied { get; set; }
+        public string RepliedTo { get; set; }
     }
 
     public class EditMessageRequest

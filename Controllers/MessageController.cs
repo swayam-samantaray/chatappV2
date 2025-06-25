@@ -15,7 +15,7 @@ namespace ChatApp.Controllers
     public class MessageController : Controller
     {
         private readonly IHubContext<ChatHub> _chatHub;
-//random
+
         public MessageController(IHubContext<ChatHub> chatHub)
         {
             _chatHub = chatHub;
@@ -25,6 +25,11 @@ namespace ChatApp.Controllers
         public async Task<IActionResult> SendMessage([FromBody] MessageDetails message)
         {
             message.MessageId = Guid.NewGuid().ToString();
+            message.IsForwarded ??= "false";         // Default to "false" if not forwarded
+            message.ForwardedTo ??= "";              // Default to empty string
+            message.IsReplied ??= "false";
+            message.RepliedTo ??= "";
+
             string directory = "ChatLogs";
             Directory.CreateDirectory(directory);
 
@@ -35,6 +40,7 @@ namespace ChatApp.Controllers
             await _chatHub.Clients.Group(message.To).SendAsync("ReceiveMessage", message);
             return Ok(new { status = "Message Sent" });
         }
+
 
         [HttpGet("GetHistory")]
         public IActionResult GetHistory([FromQuery] string groupName)
